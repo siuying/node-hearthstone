@@ -66,5 +66,28 @@ describe('Parser', function(){
         expect(result).to.deep.equal(["turn", 3]);
       })
     });
+
+    describe("TAG_CHANGE with details", function(){
+      it("should find damage", function(){
+        result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=[name=Silver Hand Recruit id=71 zone=PLAY zonePos=1 cardId=CS2_101t player=1] tag=DAMAGE value=2")
+        expect(result).to.deep.equal(["damage", {id: 71, player_id: 1, value: 2, card_id: "CS2_101t"}]);
+      });
+
+      it("should find attacking", function(){
+        result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=[name=Uther Lightbringer id=4 zone=PLAY zonePos=0 cardId=HERO_04 player=1] tag=ATTACKING value=1")
+        expect(result).to.deep.equal(["attacking", {id: 4, player_id: 1, card_id: "HERO_04"}]);
+      });
+
+      it("should find defending", function(){
+        result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=[name=Rexxar id=36 zone=PLAY zonePos=0 cardId=HERO_05 player=2] tag=DEFENDING value=1")
+        expect(result).to.deep.equal(["defending", {id: 36, player_id: 2, card_id: "HERO_05"}]);
+      });
+
+      it("should find card target", function(){
+        result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=[name=Fireblast id=37 zone=PLAY zonePos=0 cardId=CS2_034 player=2] tag=CARD_TARGET value=9")
+        expect(result).to.deep.equal(["card_target", {id: 37, player_id: 2, target_id: 9, card_id: "CS2_034"}]);
+      });
+
+    });
   });
 })
