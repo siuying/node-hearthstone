@@ -24,5 +24,16 @@ describe('Parser', function(){
         expect(result).to.deep.equal(["end_spectator_mode"]);
     });
 
+    it('should parse mode change', function(){
+        result = parser.parseLine("[LoadingScreen] LoadingScreen.OnSceneLoaded() - prevMode=HUB currMode=DRAFT")
+        expect(result).to.deep.equal(["mode", "arena"]);
+
+        result = parser.parseLine("[LoadingScreen] LoadingScreen.OnSceneLoaded() - prevMode=HUB currMode=TOURNAMENT")
+        expect(result).to.deep.equal(["mode", "ranked"]);
+
+        result = parser.parseLine("[LoadingScreen] LoadingScreen.OnSceneLoaded() - prevMode=HUB currMode=ADVENTURE")
+        expect(result).to.deep.equal(["mode", "solo"]);
+    });
+
   });
 })
