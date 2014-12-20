@@ -35,7 +35,7 @@ describe('Parser', function(){
         expect(result).to.deep.equal(["mode", "solo"]);
     });
 
-    describe("TAG_CHANGE", function(){
+    describe("Tag Change", function(){
       it("should find player id", function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() - TAG_CHANGE Entity=siuying tag=PLAYER_ID value=2")
         expect(result).to.deep.equal(["player_id", {name: "siuying", player_id: 2}]);
@@ -67,7 +67,7 @@ describe('Parser', function(){
       })
     });
 
-    describe("TAG_CHANGE with details", function(){
+    describe("Tag Change with details", function(){
       it("should find damage", function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=[name=Silver Hand Recruit id=71 zone=PLAY zonePos=1 cardId=CS2_101t player=1] tag=DAMAGE value=2")
         expect(result).to.deep.equal(["damage", {id: 71, player_id: 1, value: 2, card_id: "CS2_101t"}]);
@@ -87,7 +87,44 @@ describe('Parser', function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=[name=Fireblast id=37 zone=PLAY zonePos=0 cardId=CS2_034 player=2] tag=CARD_TARGET value=9")
         expect(result).to.deep.equal(["card_target", {id: 37, player_id: 2, target_id: 9, card_id: "CS2_034"}]);
       });
+    });
 
+    describe("Zone Change", function(){
+      it("should find card received", function(){
+        result = parser.parseLine("[Zone] ZoneChangeList.ProcessChanges() - id=47 local=False [name=Reversing Switch id=72 zone=HAND zonePos=7 cardId=PART_006 player=1] zone from  -> FRIENDLY HAND")
+        expect(result).to.deep.equal(["zone_change", {id: 72, player_id: 1, card_id: "PART_006", from_zone: "", to_zone: "FRIENDLY HAND", zone: "HAND", zone_pos: 7}]);
+      })
+
+      it("should find card received (opponent)", function(){
+        result = parser.parseLine("[Zone] ZoneChangeList.ProcessChanges() - id=1 local=False [id=22 cardId= type=INVALID zone=HAND zonePos=4 player=1] zone from  -> OPPOSING HAND")
+        expect(result).to.deep.equal(["zone_change", {id: 22, player_id: 1, card_id: "", from_zone: "", to_zone: "OPPOSING HAND", zone: "HAND", zone_pos: 4}]);
+      })
+
+      it("should find card draw", function(){
+        var line = "[Zone] ZoneChangeList.ProcessChanges() - id=27 local=False [name=Boulderfist Ogre id=10 zone=HAND zonePos=0 cardId=CS2_200 player=1] zone from FRIENDLY DECK -> FRIENDLY HAND"
+        result = parser.parseLine(line);
+        expect(result).to.deep.equal(["zone_change", {id: 10, player_id: 1, card_id: "CS2_200", from_zone: "FRIENDLY DECK", to_zone: "FRIENDLY HAND", zone: "HAND", zone_pos: 0}]);
+      })
+
+      it("should find card draw (opponent)", function(){
+        var line = "[Zone] ZoneChangeList.ProcessChanges() - id=16 local=False [id=57 cardId= type=INVALID zone=HAND zonePos=0 player=2] zone from OPPOSING DECK -> OPPOSING HAND"
+        result = parser.parseLine(line);
+        expect(result).to.deep.equal(["zone_change", {id: 57, player_id: 2, card_id: "", from_zone: "OPPOSING DECK", to_zone: "OPPOSING HAND", zone: "HAND", zone_pos: 0}]);
+      })
+
+      it("should find return card", function(){
+        var line = "[Zone] ZoneChangeList.ProcessChanges() - id=45 local=False [name=Harvest Golem id=10 zone=HAND zonePos=1 cardId=EX1_556 player=1] zone from FRIENDLY PLAY -> FRIENDLY HAND"
+        result = parser.parseLine(line);
+        expect(result).to.deep.equal(["zone_change", {id: 10, player_id: 1, card_id: "EX1_556", from_zone: "FRIENDLY PLAY", to_zone: "FRIENDLY HAND", zone: "HAND", zone_pos: 1}]);
+      })
+
+      it("should find return card (opponent)", function(){
+        var line = "[Zone] ZoneChangeList.ProcessChanges() - id=20 local=False [name=Leper Gnome id=26 zone=HAND zonePos=2 cardId=EX1_029 player=1] zone from OPPOSING PLAY -> OPPOSING HAND"
+        result = parser.parseLine(line);
+        expect(result).to.deep.equal(["zone_change", {id: 26, player_id: 1, card_id: "EX1_029", from_zone: "OPPOSING PLAY", to_zone: "OPPOSING HAND", zone: "HAND", zone_pos: 2}]);
+      })
     });
   });
+
+
 })
