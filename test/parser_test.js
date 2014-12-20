@@ -65,6 +65,11 @@ describe('Parser', function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=GameEntity tag=TURN value=3")
         expect(result).to.deep.equal(["turn", 3]);
       })
+
+      it("should find resource change", function(){
+        result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=siuying tag=RESOURCES value=8")
+        expect(result).to.deep.equal(["resources", {name: "siuying", resources: 8}]);
+      })
     });
 
     describe("Tag Change with details", function(){
@@ -87,6 +92,21 @@ describe('Parser', function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=[name=Fireblast id=37 zone=PLAY zonePos=0 cardId=CS2_034 player=2] tag=CARD_TARGET value=9")
         expect(result).to.deep.equal(["card_target", {id: 37, player_id: 2, target_id: 9, card_id: "CS2_034"}]);
       });
+
+      it("should find armour change", function() {
+        result = parser.parseLine("[Power] GameState.DebugPrintPower() -         TAG_CHANGE Entity=[name=Malfurion Stormrage id=4 zone=PLAY zonePos=0 cardId=HERO_06 player=1] tag=ARMOR value=1")
+        expect(result).to.deep.equal(["change_armor", {id: 4, armor: 1}]);
+      })
+
+      it("should find attack change", function() {
+        result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=[name=Undertaker id=27 zone=PLAY zonePos=1 cardId=FP1_028 player=1] tag=ATK value=2")
+        expect(result).to.deep.equal(["change_attack", {id: 27, attack: 2}]);
+      })
+
+      it("should find health change", function() {
+        result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=[name=Undertaker id=27 zone=PLAY zonePos=1 cardId=FP1_028 player=1] tag=HEALTH value=3")
+        expect(result).to.deep.equal(["change_health", {id: 27, health: 3}]);
+      })
     });
 
     describe("Zone Change", function(){
