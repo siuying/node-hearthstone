@@ -164,6 +164,12 @@ describe('Parser', function(){
           result = parser.parseLine(line);
           expect(result).to.deep.equal(["pos_change", {id: 10, player_id: 1, card_id: "EX1_556", from_pos: 3, to_pos: 2, zone: "HAND"}]);
         })
+
+        it("should find zone position change (opponent", function(){
+          line = "[Zone] ZoneChangeList.ProcessChanges() - id=1 local=False [id=10 cardId= type=INVALID zone=HAND zonePos=3 player=1] pos from 0 -> 3";
+          result = parser.parseLine(line);
+          expect(result).to.deep.equal(["pos_change", {id: 10, player_id: 1, card_id: "", from_pos: 0, to_pos: 3, zone: "HAND"}]);
+        })
     });
   });
 
