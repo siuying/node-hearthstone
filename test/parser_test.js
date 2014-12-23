@@ -1,4 +1,4 @@
-var Parser = require("../hearthstone").Parser;
+var Parser = require("../lib/parser");
 var chai = require('chai');
 var spies = require('chai-spies');
 chai.use(spies);
