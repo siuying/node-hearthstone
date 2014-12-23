@@ -176,8 +176,30 @@ describe('Parser', function(){
         it("should find attack", function(){
           line = "[Power] GameState.DebugPrintPower() - ACTION_START Entity=[name=Malfurion Stormrage id=4 zone=PLAY zonePos=0 cardId=HERO_06 player=1] SubType=ATTACK Index=-1 Target=[name=Webspinner id=60 zone=PLAY zonePos=2 cardId=FP1_011 player=2]";
           result = parser.parseLine(line);
-          expect(result).to.deep.equal(["attack", {source: {id: 4, card_id: "HERO_06", player_id: 1}, target: {id: 60, card_id: "FP1_011", player_id: 2}}]);
+          expect(result).to.deep.equal(["action_start", {type: "attack", source: {id: 4, card_id: "HERO_06", player_id: 1}, target: {id: 60, card_id: "FP1_011", player_id: 2}}]);
         })
+      })
+
+      describe("Power", function(){
+        it("should find power use", function(){
+          line = "[Power] GameState.DebugPrintPower() -     ACTION_START Entity=[id=41 cardId= type=INVALID zone=HAND zonePos=5 player=2] SubType=POWER Index=-1 Target=0";
+          result = parser.parseLine(line);
+          expect(result).to.deep.equal(["action_start", {type: "power", source: {id: 41, card_id: "", player_id: 2}, target: {id: 0}}]);
+        })
+
+        it("should find power use with target", function(){
+          line = "[Power] GameState.DebugPrintPower() -     ACTION_START Entity=[name=Siphon Soul id=43 zone=HAND zonePos=1 cardId=EX1_309 player=2] SubType=POWER Index=-1 Target=[name=Tirion Fordring id=29 zone=PLAY zonePos=1 cardId=EX1_383 player=1]"
+          result = parser.parseLine(line);
+          expect(result).to.deep.equal(["action_start", {type: "power", source: {id: 43, card_id: "EX1_309", player_id: 2}, target: {id: 29, card_id: "EX1_383", player_id: 1}}]);
+        })
+      })
+
+      describe("Play", function(){
+        it("should find Play", function(){
+          line = "[Power] GameState.DebugPrintPower() - ACTION_START Entity=[name=Shapeshift id=5 zone=PLAY zonePos=0 cardId=CS2_017 player=1] SubType=PLAY Index=0 Target=0"
+          result = parser.parseLine(line);
+          expect(result).to.deep.equal(["action_start", {type: "play", source: {id: 5, card_id: "CS2_017", player_id: 1}, target: {id: 0}}]);
+        });
       })
     });
   });
