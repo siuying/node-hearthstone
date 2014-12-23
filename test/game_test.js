@@ -5,7 +5,11 @@ chai.use(spies);
 var should = chai.should(), expect = chai.expect;
 
 describe('Game', function(){
-  var game = new Game();
+  var game;
+
+  beforeEach(function(){
+    game = new Game();  
+  });  
 
   describe("addEvent", function(){
     describe('tag_change', function(){
@@ -54,6 +58,33 @@ describe('Game', function(){
         game.addEvent(["tag_change", {type: "game_over", name: "cho", state: "LOST"}])
         expect(game.isCompleted()).to.equal(true);
     })
+  });
+
+  describe("toObject()", function(){
+    it("should return data object", function(){
+        game.mode = "ranked"
+        game.addEvent(["tag_change", {type: "player_id", name: "siuying", player_id: 1}]);
+        game.addEvent(["tag_change", {type: "player_id", name: "cho", player_id: 2}]);
+        game.addEvent(["tag_change", {type: "first_player", name: "siuying"}]);
+        game.addEvent(["tag_change", {type: "game_over", name: "siuying", state: "WON"}])
+        game.addEvent(["tag_change", {type: "game_over", name: "cho", state: "LOST"}])
+
+        console.log("expected:", game.toObject())
+
+        expect(game.toObject()).to.deep.equal({
+            mode: "ranked", 
+            players: [
+                {id: 1, name: "siuying", first_player: true, result: "WON"}, 
+                {id: 2, name: "cho", first_player: false, result: "LOST"}
+            ], 
+            events: [ ["tag_change", {type: "player_id", name: "siuying", player_id: 1}], 
+                ["tag_change", {type: "player_id", name: "cho", player_id: 2}],
+                ["tag_change", {type: "first_player", name: "siuying"}],
+                ["tag_change", {type: "game_over", name: "siuying", state: "WON"}],
+                ["tag_change", {type: "game_over", name: "cho", state: "LOST"}]
+            ]
+        });
+    });
   });
   
 });
