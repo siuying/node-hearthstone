@@ -83,6 +83,16 @@ describe('Game', function(){
             ]
         });
     });
+
+    describe("filename", function(){
+        it("should return filename", function(){
+            game.mode = "ranked";
+            game.addEvent(["tag_change", {type: "player_id", name: "siuying", player_id: 1}]);
+            game.addEvent(["tag_change", {type: "player_id", name: "cho", player_id: 2}]);
+            game.addEvent(["tag_change", {type: "game_start", timestamp: 1419332929}]);
+            expect(game.filename()).to.equal("1419332929_ranked_siuying_v_cho");
+        });
+    });
   });
   
 });
