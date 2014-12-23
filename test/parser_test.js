@@ -39,74 +39,74 @@ describe('Parser', function(){
     describe("Tag Change", function(){
       it("should find player id", function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() - TAG_CHANGE Entity=siuying tag=PLAYER_ID value=2")
-        expect(result).to.deep.equal(["player_id", {name: "siuying", player_id: 2}]);
+        expect(result).to.deep.equal(["tag_change", {type: "player_id", name: "siuying", player_id: 2}]);
       })
 
       it("should find first player", function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() - TAG_CHANGE Entity=begize tag=FIRST_PLAYER value=1")
-        expect(result).to.deep.equal(["first_player", {name: "begize"}]);
+        expect(result).to.deep.equal(["tag_change", {type: "first_player", name: "begize"}]);
       })
 
       it("should find player win state", function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() - TAG_CHANGE Entity=begize tag=PLAYSTATE value=WON")
-        expect(result).to.deep.equal(["game_over", {name: "begize", state: "WON"}]);
+        expect(result).to.deep.equal(["tag_change", {type: "game_over", name: "begize", state: "WON"}]);
       })
 
       it("should find game start", function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() - TAG_CHANGE Entity=GameEntity tag=TURN_START value=1418310864")
-        expect(result).to.deep.equal(["game_start", {timestamp: 1418310864}]);
+        expect(result).to.deep.equal(["tag_change", {type: "game_start", timestamp: 1418310864}]);
       })
 
       it("should find turn start", function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=siuying tag=TURN_START value=1418309639")
-        expect(result).to.deep.equal(["turn_start", {name: "siuying", timestamp: 1418309639}]);
+        expect(result).to.deep.equal(["tag_change", {type: "turn_start", name: "siuying", timestamp: 1418309639}]);
       })
 
       it("should find turn number", function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=GameEntity tag=TURN value=3")
-        expect(result).to.deep.equal(["turn", 3]);
+        expect(result).to.deep.equal(["tag_change", {type:"turn", number: 3}]);
       })
 
       it("should find resource change", function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=siuying tag=RESOURCES value=8")
-        expect(result).to.deep.equal(["resources", {name: "siuying", resources: 8}]);
+        expect(result).to.deep.equal(["tag_change", {type: "resources", name: "siuying", resources: 8}]);
       })
     });
 
     describe("Tag Change with details", function(){
       it("should find damage", function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=[name=Silver Hand Recruit id=71 zone=PLAY zonePos=1 cardId=CS2_101t player=1] tag=DAMAGE value=2")
-        expect(result).to.deep.equal(["damage", {id: 71, player_id: 1, value: 2, card_id: "CS2_101t"}]);
+        expect(result).to.deep.equal(["tag_change", {type: "damage", id: 71, player_id: 1, value: 2, card_id: "CS2_101t"}]);
       });
 
       it("should find attacking", function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=[name=Uther Lightbringer id=4 zone=PLAY zonePos=0 cardId=HERO_04 player=1] tag=ATTACKING value=1")
-        expect(result).to.deep.equal(["attacking", {id: 4, player_id: 1, card_id: "HERO_04"}]);
+        expect(result).to.deep.equal(["tag_change", {type: "attacking", id: 4, player_id: 1, card_id: "HERO_04"}]);
       });
 
       it("should find defending", function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=[name=Rexxar id=36 zone=PLAY zonePos=0 cardId=HERO_05 player=2] tag=DEFENDING value=1")
-        expect(result).to.deep.equal(["defending", {id: 36, player_id: 2, card_id: "HERO_05"}]);
+        expect(result).to.deep.equal(["tag_change", {type: "defending", id: 36, player_id: 2, card_id: "HERO_05"}]);
       });
 
       it("should find card target", function(){
         result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=[name=Fireblast id=37 zone=PLAY zonePos=0 cardId=CS2_034 player=2] tag=CARD_TARGET value=9")
-        expect(result).to.deep.equal(["card_target", {id: 37, player_id: 2, target_id: 9, card_id: "CS2_034"}]);
+        expect(result).to.deep.equal(["tag_change", {type: "card_target", id: 37, player_id: 2, target_id: 9, card_id: "CS2_034"}]);
       });
 
       it("should find armour change", function() {
         result = parser.parseLine("[Power] GameState.DebugPrintPower() -         TAG_CHANGE Entity=[name=Malfurion Stormrage id=4 zone=PLAY zonePos=0 cardId=HERO_06 player=1] tag=ARMOR value=1")
-        expect(result).to.deep.equal(["change_armor", {id: 4, armor: 1}]);
+        expect(result).to.deep.equal(["tag_change", {type: "armor", id: 4, armor: 1}]);
       })
 
       it("should find attack change", function() {
         result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=[name=Undertaker id=27 zone=PLAY zonePos=1 cardId=FP1_028 player=1] tag=ATK value=2")
-        expect(result).to.deep.equal(["change_attack", {id: 27, attack: 2}]);
+        expect(result).to.deep.equal(["tag_change", {type: "attack", id: 27, attack: 2}]);
       })
 
       it("should find health change", function() {
         result = parser.parseLine("[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=[name=Undertaker id=27 zone=PLAY zonePos=1 cardId=FP1_028 player=1] tag=HEALTH value=3")
-        expect(result).to.deep.equal(["change_health", {id: 27, health: 3}]);
+        expect(result).to.deep.equal(["tag_change", {type: "health", id: 27, health: 3}]);
       })
     });
 
