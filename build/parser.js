@@ -167,11 +167,14 @@ $traceurRuntime.ModuleStore.getAnonymousModule(function() {
             name: playerName
           }];
         case "PLAYSTATE":
-          return ["tag_change", {
-            type: "game_over",
-            name: playerName,
-            state: state
-          }];
+          if (state == "WON" || state == "LOST") {
+            return ["tag_change", {
+              type: "game_over",
+              name: playerName,
+              state: state
+            }];
+          }
+          break;
         case "TURN_START":
           if (playerName == "GameEntity") {
             return ["tag_change", {

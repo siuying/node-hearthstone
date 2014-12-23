@@ -39,7 +39,14 @@ $traceurRuntime.ModuleStore.getAnonymousModule(function() {
       var player = this.players.find((function(p) {
         return (id && p.id === id) || (name && p.name === name);
       }));
-      if (!player) {
+      if (player) {
+        if (name) {
+          player.name = name;
+        }
+        if (id) {
+          player.id = id;
+        }
+      } else {
         player = new Player(id, name);
         this.players.push(player);
       }
