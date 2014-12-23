@@ -7,6 +7,7 @@ var should = chai.should(), expect = chai.expect;
 describe('Parser', function(){
   var parser = new Parser();
   var result;
+  var line;
 
   describe('#parseLine()', function(){
     it('should parse startup', function(){
@@ -122,32 +123,31 @@ describe('Parser', function(){
         })
 
         it("should find card draw", function(){
-          var line = "[Zone] ZoneChangeList.ProcessChanges() - id=27 local=False [name=Boulderfist Ogre id=10 zone=HAND zonePos=0 cardId=CS2_200 player=1] zone from FRIENDLY DECK -> FRIENDLY HAND"
+          line = "[Zone] ZoneChangeList.ProcessChanges() - id=27 local=False [name=Boulderfist Ogre id=10 zone=HAND zonePos=0 cardId=CS2_200 player=1] zone from FRIENDLY DECK -> FRIENDLY HAND"
           result = parser.parseLine(line);
           expect(result).to.deep.equal(["zone_change", {id: 10, player_id: 1, card_id: "CS2_200", from_zone: "FRIENDLY DECK", to_zone: "FRIENDLY HAND"}]);
         })
 
         it("should find card draw (opponent)", function(){
-          var line = "[Zone] ZoneChangeList.ProcessChanges() - id=16 local=False [id=57 cardId= type=INVALID zone=HAND zonePos=0 player=2] zone from OPPOSING DECK -> OPPOSING HAND"
+          line = "[Zone] ZoneChangeList.ProcessChanges() - id=16 local=False [id=57 cardId= type=INVALID zone=HAND zonePos=0 player=2] zone from OPPOSING DECK -> OPPOSING HAND"
           result = parser.parseLine(line);
           expect(result).to.deep.equal(["zone_change", {id: 57, player_id: 2, card_id: "", from_zone: "OPPOSING DECK", to_zone: "OPPOSING HAND"}]);
         })
 
         it("should find return card", function(){
-          var line = "[Zone] ZoneChangeList.ProcessChanges() - id=45 local=False [name=Harvest Golem id=10 zone=HAND zonePos=1 cardId=EX1_556 player=1] zone from FRIENDLY PLAY -> FRIENDLY HAND"
+          line = "[Zone] ZoneChangeList.ProcessChanges() - id=45 local=False [name=Harvest Golem id=10 zone=HAND zonePos=1 cardId=EX1_556 player=1] zone from FRIENDLY PLAY -> FRIENDLY HAND"
           result = parser.parseLine(line);
           expect(result).to.deep.equal(["zone_change", {id: 10, player_id: 1, card_id: "EX1_556", from_zone: "FRIENDLY PLAY", to_zone: "FRIENDLY HAND"}]);
         })
 
         it("should find return card (opponent)", function(){
-          var line = "[Zone] ZoneChangeList.ProcessChanges() - id=20 local=False [name=Leper Gnome id=26 zone=HAND zonePos=2 cardId=EX1_029 player=1] zone from OPPOSING PLAY -> OPPOSING HAND"
+          line = "[Zone] ZoneChangeList.ProcessChanges() - id=20 local=False [name=Leper Gnome id=26 zone=HAND zonePos=2 cardId=EX1_029 player=1] zone from OPPOSING PLAY -> OPPOSING HAND"
           result = parser.parseLine(line);
           expect(result).to.deep.equal(["zone_change", {id: 26, player_id: 1, card_id: "EX1_029", from_zone: "OPPOSING PLAY", to_zone: "OPPOSING HAND"}]);
         })
       });
 
       describe("PLAY", function(){
-        var line;
         it("should find play card", function(){
           line = "[Zone] ZoneChangeList.ProcessChanges() - id=1 local=True [name=Loot Hoarder id=57 zone=HAND zonePos=2 cardId=EX1_096 player=2] zone from FRIENDLY HAND -> FRIENDLY PLAY"
           result = parser.parseLine(line);
@@ -158,7 +158,6 @@ describe('Parser', function(){
     });
 
     describe("Pos Change", function(){
-        var line;
         it("should find zone position change", function(){
           line = "[Zone] ZoneChangeList.ProcessChanges() - id=1 local=True [name=Harvest Golem id=10 zone=HAND zonePos=3 cardId=EX1_556 player=1] pos from 3 -> 2"
           result = parser.parseLine(line);
@@ -170,6 +169,16 @@ describe('Parser', function(){
           result = parser.parseLine(line);
           expect(result).to.deep.equal(["pos_change", {id: 10, player_id: 1, card_id: "", from_pos: 0, to_pos: 3, zone: "HAND"}]);
         })
+    });
+
+    describe("ACTION START", function(){
+      describe("Attack", function(){
+        it("should find attack", function(){
+          line = "[Power] GameState.DebugPrintPower() - ACTION_START Entity=[name=Malfurion Stormrage id=4 zone=PLAY zonePos=0 cardId=HERO_06 player=1] SubType=ATTACK Index=-1 Target=[name=Webspinner id=60 zone=PLAY zonePos=2 cardId=FP1_011 player=2]";
+          result = parser.parseLine(line);
+          expect(result).to.deep.equal(["attack", {source: {id: 4, card_id: "HERO_06", player_id: 1}, target: {id: 60, card_id: "FP1_011", player_id: 2}}]);
+        })
+      })
     });
   });
 
