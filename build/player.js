@@ -6,7 +6,14 @@ $traceurRuntime.ModuleStore.getAnonymousModule(function() {
     this.firstPlayer = false;
     this.result = null;
   };
-  ($traceurRuntime.createClass)(Player, {}, {});
+  ($traceurRuntime.createClass)(Player, {toObject: function() {
+      return {
+        id: this.id,
+        name: this.name,
+        first_player: this.firstPlayer,
+        result: this.result
+      };
+    }}, {});
   module.exports = Player;
   return {};
 });

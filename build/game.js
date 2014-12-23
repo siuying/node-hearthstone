@@ -44,6 +44,32 @@ $traceurRuntime.ModuleStore.getAnonymousModule(function() {
         this.players.push(player);
       }
       return player;
+    },
+    isCompleted: function() {
+      return this.players.filter((function(p) {
+        return p.result;
+      })).length == 2;
+    },
+    filename: function() {
+      var firstPlayer = this.players[0];
+      var secondPlayer = this.players[1];
+      var firstPlayerName = firstPlayer ? firstPlayer.name : "UNKNOWN";
+      var secondPlayerName = secondPlayer ? secondPlayer.name : "UNKNOWN";
+      var gameStartEvent = this.events.find((function(e) {
+        return e[0] == "tag_change" && e[1]['type'] == "game_start";
+      }));
+      var time = gameStartEvent ? (gameStartEvent[1]['timestamp']) : (new Date().valueOf() / 1000);
+      return (time + "_" + this.mode + "_" + firstPlayerName + "_v_" + secondPlayerName);
+    },
+    toObject: function() {
+      var players = this.players.map((function(p) {
+        return p.toObject();
+      }));
+      return {
+        mode: this.mode,
+        players: players,
+        events: this.events
+      };
     }
   }, {});
   module.exports = Game;
