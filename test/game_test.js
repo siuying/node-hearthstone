@@ -69,8 +69,6 @@ describe('Game', function(){
         game.addEvent(["tag_change", {type: "game_over", name: "siuying", state: "WON"}])
         game.addEvent(["tag_change", {type: "game_over", name: "cho", state: "LOST"}])
 
-        console.log("expected:", game.toObject())
-
         expect(game.toObject()).to.deep.equal({
             mode: "ranked", 
             players: [
