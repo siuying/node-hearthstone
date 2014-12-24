@@ -1,12 +1,13 @@
 {
-  "name": "node-hearthstone",
+  "name": "hearthstone",
   "version": "1.0.0",
-  "description": "hearthstone recorder",
-  "main": "index.js",
+  "description": "Utilities for Hearthstone the online card game.",
+  "main": "hearthstone.js",
   "scripts": {
     "build": "traceur --dir lib build ",
     "test": "mocha --compilers js:mocha-traceur --reporter spec test/*.js"
   },
+  "bin": "./bin/hslog",
   "author": "Francis Chong",
   "license": "MIT",
   "dependencies": {
