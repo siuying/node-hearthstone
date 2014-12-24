@@ -43,5 +43,22 @@ cli.main(function(args, options) {
 
     var parser = new Parser();
     var logger = new Logger(parser, output);
+    parser.on('startup', function(mode){
+        cli.info("Hearthstone start up detected.");
+    });
+    parser.on('mode', function(mode) {
+        cli.info("Mode: " + mode);
+    });
+    parser.on('tag_change', function(data) {
+        var type = data['type'];
+        var name = data['name'];
+        var state = data['state'];
+        if (type == "game_start") {
+            cli.info("Game Start");
+        }
+        if (type === "game_over" && logger.game.isCompleted()) {
+            cli.info("Game finished: " + name + " " + state);
+        }
+    });
     parser.parse(input, complete);
 });
