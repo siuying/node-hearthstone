@@ -9,7 +9,6 @@ var Parser = Hearthstone.Parser;
 var Logger = Hearthstone.Logger;
 
 cli.parse({
-    'whole':            ['w', 'Read the whole log file'],
     'config':           ['c', 'Hearthstone config file (~/Library/Preferences/Blizzard/Hearthstone/log.config)'],
     'input-dir':        ['i', 'Input directory (~/Library/Logs/Unity/Player.log)'],
     'output-dir':       ['o', 'Output directory (~/Documents/hearthstone)'],
@@ -20,8 +19,6 @@ cli.main(function(args, options) {
     var config = options.config ? options.config : Configurator.defaultConfigPath();
     var output = options.output ? options.output : Configurator.defaultOutputPath();
     var input = options.input ? options.input : Configurator.defaultInputPath();
-
-    var complete = options.whole ? true : false;
     var configurator = new Configurator(config);
 
     if (configurator.configNeeded()) {
@@ -60,5 +57,5 @@ cli.main(function(args, options) {
             cli.info("Game finished: " + name + " " + state);
         }
     });
-    parser.parse(input, complete);
+    parser.parse(input);
 });

@@ -1,18 +1,20 @@
 $traceurRuntime.ModuleStore.getAnonymousModule(function() {
   "use strict";
   var EventEmitter = require('events').EventEmitter;
-  var Tail = require('tail').Tail;
+  var Tail = require('file-tail');
   var Parser = function Parser() {
     $traceurRuntime.superConstructor($Parser).apply(this, arguments);
   };
   var $Parser = Parser;
   ($traceurRuntime.createClass)(Parser, {
     parse: function(file) {
-      var fromBeginning = arguments[1] !== (void 0) ? arguments[1] : true;
       var parser = this;
-      var tail = new Tail(file, '\n', {}, fromBeginning);
+      var tail = new Tail.startTailing(file);
       tail.on("line", function(line) {
         parser.parseLine(line);
+      });
+      tail.on('error', function(data) {
+        console.error("error:", data);
       });
     },
     parseLine: function(line) {
