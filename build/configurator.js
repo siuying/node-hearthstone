@@ -1,7 +1,6 @@
 $traceurRuntime.ModuleStore.getAnonymousModule(function() {
   "use strict";
   var fs = require('fs');
-  var osenv = require('osenv');
   var Configurator = function Configurator(path) {
     this.path = path ? path : $Configurator.defaultConfigPath();
   };
