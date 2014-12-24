@@ -1,13 +1,15 @@
 {
   "name": "hearthstone",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Utilities for Hearthstone the online card game.",
   "main": "hearthstone.js",
   "scripts": {
     "build": "traceur --dir lib build ",
     "test": "mocha --compilers js:mocha-traceur --reporter spec test/*.js"
   },
-  "bin": "./bin/hslog",
+  "bin": {
+    "hslog": "./bin/hslog"
+  },
   "author": "Francis Chong",
   "license": "MIT",
   "dependencies": {
