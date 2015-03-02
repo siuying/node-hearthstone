@@ -15,7 +15,8 @@
   "dependencies": {
     "cli": "^0.6.5",
     "file-tail": "^0.3.0",
-    "traceur": "0.0.79"
+    "traceur": "0.0.79",
+    "tail": "^0.4.0"
   },
   "devDependencies": {
     "chai": "1.10.0",
