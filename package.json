@@ -16,6 +16,7 @@
     "cli": "^0.6.5",
     "file-tail": "^0.3.0",
     "traceur": "0.0.79",
+    "underscore.string": "^3.0.3",
     "tail": "^0.4.0"
   },
   "devDependencies": {
