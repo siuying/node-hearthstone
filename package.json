@@ -4,6 +4,7 @@
   "description": "Utilities for Hearthstone the online card game.",
   "main": "hearthstone.js",
   "scripts": {
+    "lint": "jscs .",
     "build": "traceur --dir lib build ",
     "test": "mocha --compilers js:mocha-traceur --reporter spec test/*.js"
   },
@@ -22,6 +23,7 @@
   "devDependencies": {
     "chai": "1.10.0",
     "chai-spies": "^0.5.1",
+    "jscs": "^1.11.3",
     "mocha": "^2.0.1",
     "mocha-traceur": "2.1.0"
   }

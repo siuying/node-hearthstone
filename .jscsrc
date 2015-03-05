@@ -1,0 +1,18 @@
+{
+    "esnext": true,
+    "fileExtensions": [ ".js" ],
+
+    "validateLineBreaks": "LF",
+    "validateIndentation": 4,
+
+    "disallowKeywords": ["with"],
+    "disallowSpacesInsideObjectBrackets": null,
+    "disallowImplicitTypeConversion": ["string"],
+
+    "excludeFiles": [
+        "bin/**",
+        "build/**",
+        "node_modules/**",
+        "test/**"
+    ]
+}
