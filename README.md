@@ -2,6 +2,9 @@
 
 Utilities for Hearthstone.
 
+[![Build Status](http://img.shields.io/travis/siuying/node-hearthstone/master.svg?style=flat)](https://travis-ci.org/siuying/node-hearthstone.svg)
+
+
 ## Installation
 
     $ npm install -g hearthstone
