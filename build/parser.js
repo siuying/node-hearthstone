@@ -20,137 +20,232 @@ $traceurRuntime.ModuleStore.getAnonymousModule(function() {
     parseLine: function(line) {
       var match = null;
       var result = null;
-      if (line.match(/^Initialize engine version/)) {
-        result = ["startup"];
-      } else if (line.match(/\[Power\] .* Begin Spectating/)) {
-        result = ["begin_spectator_mode"];
-      } else if (line.match(/\[Power\] .* End Spectator/)) {
-        result = ["end_spectator_mode"];
-      } else if (match = line.match(/\[LoadingScreen\] LoadingScreen.OnSceneLoaded\(\) - prevMode=.* currMode=(.*)/)) {
-        var mode = match[1];
-        switch (mode) {
-          case "DRAFT":
-            result = ["mode", "arena"];
-            break;
-          case "TOURNAMENT":
-            result = ["mode", "ranked"];
-            break;
-          case "ADVENTURE":
-            result = ["mode", "solo"];
-            break;
+      var initializeEngineVersion = function() {
+        if (line.match(/^Initialize engine version/)) {
+          result = ["startup"];
+          return true;
         }
-      } else if (match = line.match(/TAG_CHANGE Entity=\[.*id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d)\] tag=(.*) value=(.*)/)) {
-        var $__1 = match,
-            entityId = $__1[1],
-            zone = $__1[2],
-            zonePos = $__1[3],
-            cardId = $__1[4],
-            playerId = $__1[5],
-            type = $__1[6],
-            state = $__1[7];
-        result = this.parseTagChange(type, null, state, parseInt(playerId), parseInt(entityId), zone, parseInt(zonePos), cardId);
-      } else if (match = line.match(/TAG_CHANGE Entity=(.*) tag=(.*) value=(.*)/)) {
-        var $__2 = match,
-            player = $__2[1],
-            type = $__2[2],
-            state = $__2[3];
-        result = this.parseTagChange(type, player, state);
-      } else if (match = line.match(/\[Zone\] ZoneChangeList\.ProcessChanges\(\) - id=(\d*) local=(.*) \[name=(.*) id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d*)\] zone from (.*) -> (.*)/)) {
-        var $__3 = match,
-            id = $__3[1],
-            local = $__3[2],
-            name = $__3[3],
-            entityId = $__3[4],
-            zone = $__3[5],
-            zonePos = $__3[6],
-            cardId = $__3[7],
-            playerId = $__3[8],
-            fromZone = $__3[9],
-            toZone = $__3[10];
-        result = this.parseZoneChange(id, local, name, parseInt(entityId), zone, parseInt(zonePos), cardId, parseInt(playerId), fromZone, toZone);
-      } else if (match = line.match(/\[Zone\] ZoneChangeList\.ProcessChanges\(\) - id=(\d*) local=(.*) \[id=(\d*) cardId=(.*) type=(.*) zone=(.*) zonePos=(\d*) player=(\d*)\] zone from (.*) -> (.*)/)) {
-        var $__4 = match,
-            id = $__4[1],
-            local = $__4[2],
-            entityId = $__4[3],
-            cardId = $__4[4],
-            type = $__4[5],
-            zone = $__4[6],
-            zonePos = $__4[7],
-            playerId = $__4[8],
-            fromZone = $__4[9],
-            toZone = $__4[10];
-        result = this.parseZoneChange(id, local, "", parseInt(entityId), zone, parseInt(zonePos), cardId, parseInt(playerId), fromZone, toZone);
-      } else if (match = line.match(/\[Zone\] ZoneChangeList\.ProcessChanges\(\) - id=(\d*) local=(.*) \[name=(.*) id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d*)\] pos from (\d*) -> (\d*)/)) {
-        var $__5 = match,
-            id = $__5[1],
-            local = $__5[2],
-            name = $__5[3],
-            entityId = $__5[4],
-            zone = $__5[5],
-            zonePos = $__5[6],
-            cardId = $__5[7],
-            playerId = $__5[8],
-            fromPos = $__5[9],
-            toPos = $__5[10];
-        result = this.parsePosChange(parseInt(entityId), zone, parseInt(zonePos), cardId, parseInt(playerId), parseInt(fromPos), parseInt(toPos));
-      } else if (match = line.match(/\[Zone\] ZoneChangeList\.ProcessChanges\(\) - id=(\d*) local=(.*) \[id=(\d*) cardId=(.*) type=(.*) zone=(.*) zonePos=(\d*) player=(\d*)\] pos from (\d*) -> (\d*)/)) {
-        var $__6 = match,
-            id = $__6[1],
-            local = $__6[2],
-            entityId = $__6[3],
-            cardId = $__6[4],
-            type = $__6[5],
-            zone = $__6[6],
-            zonePos = $__6[7],
-            playerId = $__6[8],
-            fromPos = $__6[9],
-            toPos = $__6[10];
-        result = this.parsePosChange(parseInt(entityId), zone, parseInt(zonePos), cardId, parseInt(playerId), parseInt(fromPos), parseInt(toPos));
-      } else if (match = line.match(/ACTION_START Entity=\[name=.* id=(\d*) .* cardId=(.*) player=(\d)\] SubType=ATTACK .* Target=\[name=.* id=(\d*) .* cardId=(.*) player=(\d)\]/)) {
-        var $__7 = match,
-            id = $__7[1],
-            cardId = $__7[2],
-            playerId = $__7[3],
-            targetId = $__7[4],
-            targetCardId = $__7[5],
-            targetPlayerId = $__7[6];
-        result = this.parseActionStart("attack", parseInt(id), cardId, parseInt(playerId), parseInt(targetId), targetCardId, parseInt(targetPlayerId));
-      } else if (match = line.match(/ACTION_START Entity=\[name=(.*) id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d*)\] SubType=POWER Index=(.*) Target=\[name=(.*) id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d*)\]/)) {
-        var $__8 = match,
-            name = $__8[1],
-            id = $__8[2],
-            zone = $__8[3],
-            zonePos = $__8[4],
-            cardId = $__8[5],
-            playerId = $__8[6],
-            index = $__8[7],
-            targetName = $__8[8],
-            targetId = $__8[9],
-            targetZone = $__8[10],
-            targetZonePos = $__8[11],
-            targetCardId = $__8[12],
-            targetPlayerId = $__8[13];
-        result = this.parseActionStart("power", parseInt(id), cardId, parseInt(playerId), parseInt(targetId), targetCardId, parseInt(targetPlayerId));
-      } else if (match = line.match(/ACTION_START Entity=\[id=(\d*) cardId=(.*) type=(.*) zone=(.*) zonePos=(\d*) player=(\d*)\] SubType=POWER Index=(.*) Target=(\d*)/)) {
-        var $__9 = match,
-            id = $__9[1],
-            cardId = $__9[2],
-            type = $__9[3],
-            zone = $__9[4],
-            zonePos = $__9[5],
-            playerId = $__9[6],
-            index = $__9[7],
-            targetId = $__9[8];
-        result = this.parseActionStart("power", parseInt(id), cardId, parseInt(playerId), parseInt(targetId), null, null);
-      } else if (match = line.match(/ACTION_START Entity=\[name=.* id=(\d*) .* cardId=(.*) player=(\d)\] SubType=PLAY Index=(.*) Target=(\d*)/)) {
-        var $__10 = match,
-            id = $__10[1],
-            cardId = $__10[2],
-            playerId = $__10[3],
-            index = $__10[4],
-            targetId = $__10[5];
-        result = this.parseActionStart("play", parseInt(id), cardId, parseInt(playerId), parseInt(targetId), null, null);
+      };
+      var beginSpectatorMode = function() {
+        if (line.match(/\[Power\] .* Begin Spectating/)) {
+          result = ["begin_spectator_mode"];
+          return true;
+        }
+      };
+      var endSpectatorMode = function() {
+        if (line.match(/\[Power\] .* End Spectator/)) {
+          result = ["end_spectator_mode"];
+          return true;
+        }
+      };
+      var detectCurrentMode = function() {
+        var match = line.match(/\[LoadingScreen\] LoadingScreen.OnSceneLoaded\(\) - prevMode=.* currMode=(.*)/);
+        if (match) {
+          var mode = match[1];
+          switch (mode) {
+            case "DRAFT":
+              result = ["mode", "arena"];
+              return true;
+            case "TOURNAMENT":
+              result = ["mode", "ranked"];
+              return true;
+            case "ADVENTURE":
+              result = ["mode", "solo"];
+              return true;
+          }
+        }
+      };
+      var detectChangeWithDetails = function() {
+        var match = line.match(/TAG_CHANGE Entity=\[.*id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d)\] tag=(.*) value=(.*)/);
+        if (match) {
+          var $__1 = match,
+              entityId = $__1[1],
+              zone = $__1[2],
+              zonePos = $__1[3],
+              cardId = $__1[4],
+              playerId = $__1[5],
+              type = $__1[6],
+              state = $__1[7];
+          result = this.parseTagChange(type, null, state, parseInt(playerId), parseInt(entityId), zone, parseInt(zonePos), cardId);
+          return true;
+        }
+      };
+      var detectTagChange = function() {
+        var match = line.match(/TAG_CHANGE Entity=(.*) tag=(.*) value=(.*)/);
+        if (match) {
+          var $__1 = match,
+              player = $__1[1],
+              type = $__1[2],
+              state = $__1[3];
+          result = this.parseTagChange(type, player, state);
+          return true;
+        }
+      };
+      var detectPlayerZoneChange = function() {
+        var match = line.match(/\[Zone\] ZoneChangeList\.ProcessChanges\(\) - id=(\d*) local=(.*) \[name=(.*) id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d*)\] zone from (.*) -> (.*)/);
+        if (match) {
+          var $__1 = match,
+              id = $__1[1],
+              local = $__1[2],
+              name = $__1[3],
+              entityId = $__1[4],
+              zone = $__1[5],
+              zonePos = $__1[6],
+              cardId = $__1[7],
+              playerId = $__1[8],
+              fromZone = $__1[9],
+              toZone = $__1[10];
+          result = this.parseZoneChange(id, local, name, parseInt(entityId), zone, parseInt(zonePos), cardId, parseInt(playerId), fromZone, toZone);
+          return true;
+        }
+      };
+      var detectOpponentCardChange = function() {
+        var match = line.match(/\[Zone\] ZoneChangeList\.ProcessChanges\(\) - id=(\d*) local=(.*) \[id=(\d*) cardId=(.*) type=(.*) zone=(.*) zonePos=(\d*) player=(\d*)\] zone from (.*) -> (.*)/);
+        if (match) {
+          var $__1 = match,
+              id = $__1[1],
+              local = $__1[2],
+              entityId = $__1[3],
+              cardId = $__1[4],
+              type = $__1[5],
+              zone = $__1[6],
+              zonePos = $__1[7],
+              playerId = $__1[8],
+              fromZone = $__1[9],
+              toZone = $__1[10];
+          result = this.parseZoneChange(id, local, "", parseInt(entityId), zone, parseInt(zonePos), cardId, parseInt(playerId), fromZone, toZone);
+          return true;
+        }
+      };
+      var detectPlayerPositionZoneChange = function() {
+        var match = line.match(/\[Zone\] ZoneChangeList\.ProcessChanges\(\) - id=(\d*) local=(.*) \[name=(.*) id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d*)\] pos from (\d*) -> (\d*)/);
+        if (match) {
+          var $__1 = match,
+              id = $__1[1],
+              local = $__1[2],
+              name = $__1[3],
+              entityId = $__1[4],
+              zone = $__1[5],
+              zonePos = $__1[6],
+              cardId = $__1[7],
+              playerId = $__1[8],
+              fromPos = $__1[9],
+              toPos = $__1[10];
+          result = this.parsePosChange(parseInt(entityId), zone, parseInt(zonePos), cardId, parseInt(playerId), parseInt(fromPos), parseInt(toPos));
+          return true;
+        }
+      };
+      var detectOpponentPositionZoneChange = function() {
+        var match = line.match(/\[Zone\] ZoneChangeList\.ProcessChanges\(\) - id=(\d*) local=(.*) \[id=(\d*) cardId=(.*) type=(.*) zone=(.*) zonePos=(\d*) player=(\d*)\] pos from (\d*) -> (\d*)/);
+        if (match) {
+          var $__1 = match,
+              id = $__1[1],
+              local = $__1[2],
+              entityId = $__1[3],
+              cardId = $__1[4],
+              type = $__1[5],
+              zone = $__1[6],
+              zonePos = $__1[7],
+              playerId = $__1[8],
+              fromPos = $__1[9],
+              toPos = $__1[10];
+          result = this.parsePosChange(parseInt(entityId), zone, parseInt(zonePos), cardId, parseInt(playerId), parseInt(fromPos), parseInt(toPos));
+          return true;
+        }
+      };
+      var detectAttack = function() {
+        var match = line.match(/ACTION_START Entity=\[name=.* id=(\d*) .* cardId=(.*) player=(\d)\] SubType=ATTACK .* Target=\[name=.* id=(\d*) .* cardId=(.*) player=(\d)\]/);
+        if (match) {
+          var $__1 = match,
+              id = $__1[1],
+              cardId = $__1[2],
+              playerId = $__1[3],
+              targetId = $__1[4],
+              targetCardId = $__1[5],
+              targetPlayerId = $__1[6];
+          result = this.parseActionStart("attack", parseInt(id), cardId, parseInt(playerId), parseInt(targetId), targetCardId, parseInt(targetPlayerId));
+          return true;
+        }
+      };
+      var detectPowerWithTarget = function() {
+        var match = line.match(/ACTION_START Entity=\[name=(.*) id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d*)\] SubType=POWER Index=(.*) Target=\[name=(.*) id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d*)\]/);
+        if (match) {
+          var $__1 = match,
+              name = $__1[1],
+              id = $__1[2],
+              zone = $__1[3],
+              zonePos = $__1[4],
+              cardId = $__1[5],
+              playerId = $__1[6],
+              index = $__1[7],
+              targetName = $__1[8],
+              targetId = $__1[9],
+              targetZone = $__1[10],
+              targetZonePos = $__1[11],
+              targetCardId = $__1[12],
+              targetPlayerId = $__1[13];
+          result = this.parseActionStart("power", parseInt(id), cardId, parseInt(playerId), parseInt(targetId), targetCardId, parseInt(targetPlayerId));
+          return true;
+        }
+      };
+      var detectPowerWithoutTarget = function() {
+        var match = line.match(/ACTION_START Entity=\[id=(\d*) cardId=(.*) type=(.*) zone=(.*) zonePos=(\d*) player=(\d*)\] SubType=POWER Index=(.*) Target=(\d*)/);
+        if (match) {
+          var $__1 = match,
+              id = $__1[1],
+              cardId = $__1[2],
+              type = $__1[3],
+              zone = $__1[4],
+              zonePos = $__1[5],
+              playerId = $__1[6],
+              index = $__1[7],
+              targetId = $__1[8];
+          result = this.parseActionStart("power", parseInt(id), cardId, parseInt(playerId), parseInt(targetId), null, null);
+          return true;
+        }
+      };
+      var detectPlay = function() {
+        var match = line.match(/ACTION_START Entity=\[name=.* id=(\d*) .* cardId=(.*) player=(\d)\] SubType=PLAY Index=(.*) Target=(\d*)/);
+        if (match) {
+          var $__1 = match,
+              id = $__1[1],
+              cardId = $__1[2],
+              playerId = $__1[3],
+              index = $__1[4],
+              targetId = $__1[5];
+          result = this.parseActionStart("play", parseInt(id), cardId, parseInt(playerId), parseInt(targetId), null, null);
+          return true;
+        }
+      };
+      switch (true) {
+        case initializeEngineVersion.bind(this)():
+          break;
+        case beginSpectatorMode.bind(this)():
+          break;
+        case endSpectatorMode.bind(this)():
+          break;
+        case detectCurrentMode.bind(this)():
+          break;
+        case detectChangeWithDetails.bind(this)():
+          break;
+        case detectTagChange.bind(this)():
+          break;
+        case detectPlayerZoneChange.bind(this)():
+          break;
+        case detectOpponentCardChange.bind(this)():
+          break;
+        case detectPlayerPositionZoneChange.bind(this)():
+          break;
+        case detectOpponentPositionZoneChange.bind(this)():
+          break;
+        case detectAttack.bind(this)():
+          break;
+        case detectPowerWithTarget.bind(this)():
+          break;
+        case detectPowerWithoutTarget.bind(this)():
+          break;
+        case detectPlay.bind(this)():
+          break;
       }
       this.emit.apply(this, result);
       return result;
@@ -190,6 +285,7 @@ $traceurRuntime.ModuleStore.getAnonymousModule(function() {
               timestamp: parseInt(state)
             }];
           }
+          break;
         case "RESOURCES":
           return ["tag_change", {
             type: "resources",

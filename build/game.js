@@ -1,6 +1,7 @@
 $traceurRuntime.ModuleStore.getAnonymousModule(function() {
   "use strict";
   var Player = require('./player');
+  var slugify = require('underscore.string/slugify');
   var Game = function Game() {
     var mode = arguments[0] !== (void 0) ? arguments[0] : "unknown";
     this.mode = mode;
@@ -66,7 +67,7 @@ $traceurRuntime.ModuleStore.getAnonymousModule(function() {
         return e[0] == "tag_change" && e[1]['type'] == "game_start";
       }));
       var time = gameStartEvent ? (gameStartEvent[1]['timestamp']) : (new Date().valueOf() / 1000);
-      return (time + "_" + this.mode + "_" + firstPlayerName + "_v_" + secondPlayerName);
+      return (time + "_" + this.mode + "_" + slugify(firstPlayerName) + "_v_" + slugify(secondPlayerName));
     },
     toObject: function() {
       var players = this.players.map((function(p) {
