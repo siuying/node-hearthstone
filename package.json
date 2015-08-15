@@ -5,7 +5,8 @@
   "main": "hearthstone.js",
   "scripts": {
     "lint": "jscs .",
-    "build": "babel  --watch --stage 0 lib --out-dir build",
+    "build": "babel --stage 0 lib --out-dir build",
+    "watch": "babel  --watch --stage 0 lib --out-dir build",
     "test": "mocha --compilers js:babel/register"
   },
   "bin": {
@@ -15,9 +16,10 @@
   "license": "MIT",
   "dependencies": {
     "cli": "^0.6.5",
+    "colors": "^1.1.2",
     "file-tail": "^0.3.0",
-    "underscore.string": "^3.0.3",
-    "tail": "^0.4.0"
+    "tail": "^0.4.0",
+    "underscore.string": "^3.0.3"
   },
   "devDependencies": {
     "babel": "^5.8.21",
