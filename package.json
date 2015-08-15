@@ -5,8 +5,8 @@
   "main": "hearthstone.js",
   "scripts": {
     "lint": "jscs .",
-    "build": "traceur --dir lib build ",
-    "test": "mocha --compilers js:mocha-traceur --reporter spec test/*.js"
+    "build": "babel  --watch --stage 0 lib --out-dir build",
+    "test": "mocha --compilers js:babel/register"
   },
   "bin": {
     "hslog": "./bin/hslog"
@@ -16,15 +16,14 @@
   "dependencies": {
     "cli": "^0.6.5",
     "file-tail": "^0.3.0",
-    "traceur": "0.0.79",
     "underscore.string": "^3.0.3",
     "tail": "^0.4.0"
   },
   "devDependencies": {
+    "babel": "^5.8.21",
     "chai": "1.10.0",
     "chai-spies": "^0.5.1",
     "jscs": "^1.11.3",
-    "mocha": "^2.0.1",
-    "mocha-traceur": "2.1.0"
+    "mocha": "^2.0.1"
   }
 }
