@@ -5,11 +5,12 @@ $traceurRuntime.ModuleStore.getAnonymousModule(function() {
   var Parser = require('./parser');
   var Tail = require('tail').Tail;
   var Game = require('./game');
-  var Logger = function Logger(parser, outputPath) {
+  var Logger = function Logger(parser, outputPath, options) {
     this.parser = parser;
     this.mode = null;
     this.outputPath = outputPath;
     this.game = new Game(null);
+    this.options = options;
     var logger = this;
     this.parser.on('mode', function(mode) {
       logger.mode = mode;

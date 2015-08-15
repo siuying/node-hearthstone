@@ -52,6 +52,9 @@ $traceurRuntime.ModuleStore.getAnonymousModule(function() {
             case "ADVENTURE":
               result = ["mode", "solo"];
               return true;
+            case "TAVERN_BRAWL":
+              result = ["mode", "brawl"];
+              return true;
           }
         }
       };
