@@ -5,8 +5,8 @@
   "main": "hearthstone.js",
   "scripts": {
     "lint": "jscs .",
-    "build": "traceur --dir lib build ",
-    "test": "mocha --compilers js:mocha-traceur --reporter spec test/*.js"
+    "build": "babel --presets es2015,stage-0 lib --out-dir built",
+    "test": "mocha --compilers js:babel-core/register --reporter spec test/*.js"
   },
   "bin": {
     "hslog": "./bin/hslog"
@@ -14,17 +14,18 @@
   "author": "Francis Chong",
   "license": "MIT",
   "dependencies": {
-    "cli": "^0.6.5",
     "file-tail": "^0.3.0",
-    "traceur": "0.0.79",
     "underscore.string": "^3.0.3",
     "tail": "^0.4.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.2.0",
+    "babel-core": "^6.2.1",
+    "babel-preset-es2015": "^6.1.18",
+    "babel-preset-stage-0": "^6.1.18",
     "chai": "1.10.0",
     "chai-spies": "^0.5.1",
     "jscs": "^1.11.3",
-    "mocha": "^2.0.1",
-    "mocha-traceur": "2.1.0"
+    "mocha": "^2.0.1"
   }
 }
