@@ -43,15 +43,17 @@ var Parser = (function (_EventEmitter) {
                 })[0];
                 var fullpath = this.full;
                 if (logParser) {
+                    console.log("Watching", file);
                     var tail = new Tail.startTailing(fullpath);
                     tail.on("line", function (line) {
-                        parser.parseLine(logParser.parsers, line);
+                        var result = parser.parseLine(logParser.parsers, line);
+                        if (result) {
+                            console.log(result);
+                        }
                     });
                     tail.on('error', function (data) {
                         console.error("error:", data);
                     });
-                } else {
-                    console.log("ignore", fullpath);
                 }
             });
         }

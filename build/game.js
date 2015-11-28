@@ -16,8 +16,12 @@ var Game = (function () {
         _classCallCheck(this, Game);
 
         this.mode = mode;
+        this.turn = 0;
         this.players = [];
         this.events = [];
+        this.currentPlayer = null;
+        this.gameStartTime = new Date();
+        this.gameEndTime = null;
     }
 
     _createClass(Game, [{
@@ -35,6 +39,18 @@ var Game = (function () {
                 var state = data.state;
 
                 switch (type) {
+                    case "game_start":
+                        this.gameStartTime = new Date();
+                        return;
+                    case "game_over":
+                        this.gameEndTime = new Date();
+                        return;
+                    case "turn":
+                        this.turn = state;
+                        return;
+                    case "current_player":
+                        this.currentPlayer = this.playerWithIdOrName(player_id, name);
+                        return;
                     case "player_id":
                         this.playerWithIdOrName(player_id, name);
                         break;
@@ -88,8 +104,17 @@ var Game = (function () {
             var gameStartEvent = this.events.filter(function (e) {
                 return e[0] == "tag_change" && e[1]['type'] == "game_start";
             })[0];
-            var time = gameStartEvent ? gameStartEvent[1]['timestamp'] : new Date().valueOf() / 1000;
-            return time + '_' + this.mode + '_' + slugify(firstPlayerName) + '_v_' + slugify(secondPlayerName);
+            var time = this.gameStartTime().valueOf();
+            return time + '_' + slugify(firstPlayerName) + '_v_' + slugify(secondPlayerName);
+        }
+    }, {
+        key: 'gameLength',
+        value: function gameLength() {
+            if (this.gameEndTime && this.gameStartTime) {
+                return this.gameEndTime.valueOf() - this.gameStartTime.valueOf();
+            } else {
+                return null;
+            }
         }
     }, {
         key: 'toObject',
@@ -97,7 +122,15 @@ var Game = (function () {
             var players = this.players.map(function (p) {
                 return p.toObject();
             });
-            return { mode: this.mode, players: players, events: this.events };
+            return {
+                mode: this.mode,
+                players: players,
+                turn: this.turn,
+                events: this.events,
+                game_start: this.gameStartTime.valueOf(),
+                game_end: this.gameEndTime.valueOf(),
+                game_length: this.gameLength()
+            };
         }
     }]);
 

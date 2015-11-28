@@ -55,17 +55,16 @@ var Reporter = (function () {
             var state = data.state;
 
             switch (type) {
-                case "game_start":
-                    console.log(colors.red("Game Start"));
-                    break;
                 case "player_id":
                     this.onPlayerId(name, state);
                     break;
                 case "first_player":
                     console.log(colors.white(name + " play first."));
                     break;
-                case "game_over":
-                    console.log(colors.red("Game finished: " + name + " " + state));
+                case "playstate":
+                    if (state == "WON" || state == "LOST" || state == "DRAW") {
+                        console.log(colors.red("Game finished: " + name + " " + state));
+                    }
                     break;
             }
         }

@@ -10,11 +10,9 @@ var parseTagChange = function parseTagChange(type, playerName, state, playerId, 
             return ["tag_change", { type: "first_player", name: playerName }];
         case "PLAYSTATE":
             return ["tag_change", { type: "playstate", name: playerName, state: state }];
-        case "TURN_START":
-            if (playerName == "GameEntity") {
-                return ["tag_change", { type: "game_start", timestamp: parseInt(state) }];
-            } else {
-                return ["tag_change", { type: "turn_start", name: playerName, timestamp: parseInt(state) }];
+        case "CURRENT_PLAYER":
+            if (state == "1") {
+                return ["tag_change", { type: "current_player", name: playerName }];
             }
             break;
         case "RESOURCES":
@@ -24,18 +22,35 @@ var parseTagChange = function parseTagChange(type, playerName, state, playerId, 
         case "DAMAGE":
             return ["tag_change", { type: "damage", id: entityId, player_id: playerId, value: parseInt(state), card_id: cardId }];
         case "ATTACKING":
-            return ["tag_change", { type: "attacking", id: entityId, player_id: playerId, card_id: cardId }];
+            if (state == "1") {
+                return ["tag_change", { type: "attacking", id: entityId, player_id: playerId, card_id: cardId }];
+            }
+            break;
         case "DEFENDING":
-            return ["tag_change", { type: "defending", id: entityId, player_id: playerId, card_id: cardId }];
+            if (state == "1") {
+                return ["tag_change", { type: "defending", id: entityId, player_id: playerId, card_id: cardId }];
+            }
+            break;
         case "CARD_TARGET":
             return ["tag_change", { type: "card_target", id: entityId, player_id: playerId, target_id: parseInt(state), card_id: cardId }];
         case "ARMOR":
-            return ["tag_change", { type: "armor", id: entityId, armor: parseInt(state) }];
+            return ["tag_change", { type: "armor", card_id: cardId, player_id: playerId, id: entityId, armor: parseInt(state) }];
         case "ATK":
-            return ["tag_change", { type: "attack", id: entityId, attack: parseInt(state) }];
+            return ["tag_change", { type: "attack", card_id: cardId, player_id: playerId, id: entityId, attack: parseInt(state) }];
         case "HEALTH":
-            return ["tag_change", { type: "health", id: entityId, health: parseInt(state) }];
-
+            return ["tag_change", { type: "health", card_id: cardId, player_id: playerId, id: entityId, health: parseInt(state) }];
+        case "STATE":
+            if (playerName == "GameEntity") {
+                switch (state) {
+                    case "RUNNING":
+                        return ["tag_change", { type: "game_start" }];
+                    case "COMPLETE":
+                        return ["tag_change", { type: "game_over" }];
+                }
+            }
+            break;
+        default:
+            return null;
     }
 };
 
@@ -55,7 +70,7 @@ var parseActionStart = function parseActionStart(type, sourceId, sourceCardId, s
  * This function tracks tag changes related to damage, attacking, defending, card target, armor, attack, and health
  */
 var detectChangeWithDetails = function detectChangeWithDetails(line) {
-    var match = line.match(/GameState\.DebugPrintPower\(\) -\WTAG_CHANGE Entity=\[.*id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d)\] tag=(.*) value=(.*)/);
+    var match = line.match(/GameState\.DebugPrintPower\(\) -\W+TAG_CHANGE Entity=\[.*id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d)\] tag=(.*) value=(.*)/);
     if (match) {
         var _match = _slicedToArray(match, 8);
 
@@ -75,7 +90,7 @@ var detectChangeWithDetails = function detectChangeWithDetails(line) {
  * This function tracks changes in tags related to player id, player number, win state, game start, turn start, and turn number
  */
 var detectTagChange = function detectTagChange(line) {
-    var match = line.match(/GameState\.DebugPrintPower\(\) -\WTAG_CHANGE Entity=(.*) tag=(.*) value=(.*)/);
+    var match = line.match(/GameState\.DebugPrintPower\(\) -\W+TAG_CHANGE Entity=(.*) tag=(.*) value=(.*)/);
     if (match) {
         var _match2 = _slicedToArray(match, 4);
 
@@ -88,7 +103,7 @@ var detectTagChange = function detectTagChange(line) {
 };
 
 var detectAttack = function detectAttack(line) {
-    var match = line.match(/GameState\.DebugPrintPower\(\) -\WACTION_START Entity=\[name=.* id=(\d*) .* cardId=(.*) player=(\d)\] SubType=ATTACK .* Target=\[name=.* id=(\d*) .* cardId=(.*) player=(\d)\]/);
+    var match = line.match(/GameState\.DebugPrintPower\(\) -\W+ACTION_START Entity=\[name=.* id=(\d*) .* cardId=(.*) player=(\d)\] BlockType=ATTACK .* Target=\[name=.* id=(\d*) .* cardId=(.*) player=(\d)\]/);
     if (match) {
         var _match3 = _slicedToArray(match, 7);
 
@@ -104,7 +119,7 @@ var detectAttack = function detectAttack(line) {
 };
 
 var detectPowerWithTarget = function detectPowerWithTarget(line) {
-    var match = line.match(/GameState\.DebugPrintPower\(\) -\WACTION_START Entity=\[name=(.*) id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d*)\] SubType=POWER Index=(.*) Target=\[name=(.*) id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d*)\]/);
+    var match = line.match(/GameState\.DebugPrintPower\(\) -\W+ACTION_START Entity=\[name=(.*) id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d*)\] BlockType=POWER Index=(.*) Target=\[name=(.*) id=(\d*) zone=(.*) zonePos=(\d*) cardId=(.*) player=(\d*)\]/);
     if (match) {
         var _match4 = _slicedToArray(match, 14);
 
@@ -127,7 +142,7 @@ var detectPowerWithTarget = function detectPowerWithTarget(line) {
 };
 
 var detectPowerWithoutTarget = function detectPowerWithoutTarget(line) {
-    var match = line.match(/GameState\.DebugPrintPower\(\) -\WACTION_START Entity=\[id=(\d*) cardId=(.*) type=(.*) zone=(.*) zonePos=(\d*) player=(\d*)\] SubType=POWER Index=(.*) Target=(\d*)/);
+    var match = line.match(/GameState\.DebugPrintPower\(\) -\W+ACTION_START Entity=\[id=(\d*) cardId=(.*) type=(.*) zone=(.*) zonePos=(\d*) player=(\d*)\] BlockType=POWER Index=(.*) Target=(\d+)/);
     if (match) {
         var _match5 = _slicedToArray(match, 9);
 
@@ -145,7 +160,7 @@ var detectPowerWithoutTarget = function detectPowerWithoutTarget(line) {
 };
 
 var detectPlay = function detectPlay(line) {
-    var match = line.match(/GameState\.DebugPrintPower\(\) -\WACTION_START Entity=\[name=.* id=(\d*) .* cardId=(.*) player=(\d)\] SubType=PLAY Index=(.*) Target=(\d*)/);
+    var match = line.match(/GameState\.DebugPrintPower\(\) -\WACTION_START Entity=\[name=.* id=(\d*) .* cardId=(.*) player=(\d)\] BlockType=PLAY Index=(.*) Target=(\d+)/);
     if (match) {
         var _match6 = _slicedToArray(match, 6);
 
@@ -159,7 +174,24 @@ var detectPlay = function detectPlay(line) {
     }
 };
 
+var detectPlayWithDetail = function detectPlayWithDetail(line) {
+    var match = line.match(/GameState\.DebugPrintPower\(\) -\WACTION_START Entity=\[name=.* id=(\d*) .* cardId=(.*) player=(\d)\] BlockType=PLAY Index=(.*) Target=\[name=.* id=(\d*) .* cardId=(.*) player=(\d)\]/);
+    if (match) {
+        var _match7 = _slicedToArray(match, 8);
+
+        var id = _match7[1];
+        var cardId = _match7[2];
+        var playerId = _match7[3];
+        var index = _match7[4];
+        var targetId = _match7[5];
+        var targetCardId = _match7[6];
+        var targetPlayerId = _match7[7];
+
+        return parseActionStart("play", parseInt(id), cardId, parseInt(playerId), parseInt(targetId), targetCardId, parseInt(targetPlayerId));
+    }
+};
+
 module.exports = {
     filename: "Power.log",
-    parsers: [detectChangeWithDetails, detectTagChange, detectAttack, detectPowerWithTarget, detectPowerWithoutTarget, detectPlay]
+    parsers: [detectChangeWithDetails, detectTagChange, detectAttack, detectPowerWithTarget, detectPowerWithoutTarget, detectPlay, detectPlayWithDetail]
 };
