@@ -1,3 +1,6 @@
+// polyfill
+require("babel-polyfill");
+
 // load modules
 var Hearthstone = {
     Logger: require('./build/logger'),

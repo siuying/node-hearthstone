@@ -58,7 +58,7 @@ var Configurator = (function () {
         key: "defaultInputPath",
         value: function defaultInputPath() {
             var home = this.getUserHome();
-            return home + "/Library/Logs/Unity/Player.log";
+            return "/Applications/Hearthstone/Logs/";
         }
     }, {
         key: "defaultOutputPath",

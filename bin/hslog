@@ -11,7 +11,7 @@ var Reporter = Hearthstone.Reporter;
 
 cli.parse({
     'config':           ['c', 'Hearthstone config file (~/Library/Preferences/Blizzard/Hearthstone/log.config)'],
-    'input-dir':        ['i', 'Input directory (~/Library/Logs/Unity/Player.log)'],
+    'input-dir':        ['i', 'Input directory (/Applications/Hearthstone/Logs/)'],
     'output-dir':       ['o', 'Output directory (~/Documents/hearthstone)'],
     'verbose':          ['v', 'Verbose output']
 });
@@ -19,7 +19,7 @@ cli.parse({
 cli.main(function(args, options) {
     var config = options.config ? options.config : Configurator.defaultConfigPath();
     var output = options.output ? options.output : Configurator.defaultOutputPath();
-    var input = options.input ? options.input : Configurator.defaultInputPath();
+    var inputPath = options.input ? options.input : Configurator.defaultInputPath();
     var configurator = new Configurator(config);
 
     if (configurator.configNeeded()) {
@@ -29,8 +29,8 @@ cli.main(function(args, options) {
         this.debug('Configure not needed');
     }
 
-    if (!input || !fs.existsSync(input)) {
-        this.error("File not found: " + input)
+    if (!inputPath || !fs.existsSync(inputPath)) {
+        this.error("Path not found: " + inputPath)
         return 1;
     }
 
@@ -42,5 +42,5 @@ cli.main(function(args, options) {
     var parser = new Parser();
     var logger = new Logger(parser, output);
     var reporter = new Reporter(parser);
-    parser.parse(input);
+    parser.parse(inputPath);
 });
