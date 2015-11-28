@@ -1,6 +1,3 @@
-// load traceur runtime
-require('traceur/bin/traceur-runtime');
-
 // load modules
 var Hearthstone = {
     Logger: require('./build/logger'),

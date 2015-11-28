@@ -1,10 +1,10 @@
 'use strict';
 
-var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; })();
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Player = require('./player');
 var slugify = require('underscore.string/slugify');
@@ -55,9 +55,9 @@ var Game = (function () {
     }, {
         key: 'playerWithIdOrName',
         value: function playerWithIdOrName(id, name) {
-            var player = this.players.find(function (p) {
+            var player = this.players.filter(function (p) {
                 return id && p.id === id || name && p.name === name;
-            });
+            })[0];
             if (player) {
                 if (name) {
                     player.name = name;
@@ -85,9 +85,9 @@ var Game = (function () {
             var secondPlayer = this.players[1];
             var firstPlayerName = firstPlayer ? firstPlayer.name : "UNKNOWN";
             var secondPlayerName = secondPlayer ? secondPlayer.name : "UNKNOWN";
-            var gameStartEvent = this.events.find(function (e) {
+            var gameStartEvent = this.events.filter(function (e) {
                 return e[0] == "tag_change" && e[1]['type'] == "game_start";
-            });
+            })[0];
             var time = gameStartEvent ? gameStartEvent[1]['timestamp'] : new Date().valueOf() / 1000;
             return time + '_' + this.mode + '_' + slugify(firstPlayerName) + '_v_' + slugify(secondPlayerName);
         }
