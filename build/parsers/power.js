@@ -9,10 +9,7 @@ var parseTagChange = function parseTagChange(type, playerName, state, playerId, 
         case "FIRST_PLAYER":
             return ["tag_change", { type: "first_player", name: playerName }];
         case "PLAYSTATE":
-            if (state == "WON" || state == "LOST") {
-                return ["tag_change", { type: "game_over", name: playerName, state: state }];
-            }
-            break;
+            return ["tag_change", { type: "playstate", name: playerName, state: state }];
         case "TURN_START":
             if (playerName == "GameEntity") {
                 return ["tag_change", { type: "game_start", timestamp: parseInt(state) }];

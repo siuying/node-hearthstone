@@ -42,7 +42,7 @@ var Game = (function () {
                         var player = this.playerWithIdOrName(null, name);
                         player.firstPlayer = true;
                         break;
-                    case "game_over":
+                    case "playstate":
                         var player = this.playerWithIdOrName(null, name);
                         player.result = state;
                         break;
@@ -75,7 +75,7 @@ var Game = (function () {
         key: 'isCompleted',
         value: function isCompleted() {
             return this.players.filter(function (p) {
-                return p.result;
+                return p.result == "WON" || p.result == "LOST" || p.result == "DRAW";
             }).length == 2;
         }
     }, {
