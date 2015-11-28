@@ -78,7 +78,7 @@ var Logger = (function () {
         key: 'saveGame',
         value: function saveGame() {
             if (this.game) {
-                var jsonStr = JSON.stringify(this.game.toObject());
+                var jsonStr = JSON.stringify(this.game.toObject(), null, 2);
                 var filename = this.game.filename() + '.json';
                 var fullpath = path.join(this.outputPath, filename);
                 fs.writeFileSync(fullpath, jsonStr);
