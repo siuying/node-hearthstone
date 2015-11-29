@@ -24,7 +24,7 @@ describe('Zone', function(){
         it('should parse friendly card zone change', function(){
             line = "D 19:52:05.0011970 ZoneChangeList.ProcessChanges() - id=1 local=False [id=37 cardId= type=INVALID zone=DECK zonePos=0 player=2] zone from  -> FRIENDLY DECK"
             result = parser.parseLine(Zone.parsers, line);
-            expect(result).to.deep.equal(["zone_change", {"card_id": "", "from_zone": "OPPOSING DECK", "id": 25, "player_id": 1, "to_zone": "OPPOSING HAND"}]);
+            expect(result).to.deep.equal(["zone_change", {"card_id": "", "from_zone": "", "id": 37, "player_id": 2, "to_zone": "FRIENDLY DECK"}]);
 
             line = "D 19:55:11.4950970 ZoneChangeList.ProcessChanges() - id=33 local=False [name=Northshire Cleric id=61 zone=HAND zonePos=0 cardId=CS2_235 player=2] zone from FRIENDLY DECK -> FRIENDLY HAND"
             result = parser.parseLine(Zone.parsers, line);
