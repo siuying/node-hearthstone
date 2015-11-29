@@ -104,7 +104,7 @@ var Game = (function () {
             var gameStartEvent = this.events.filter(function (e) {
                 return e[0] == "tag_change" && e[1]['type'] == "game_start";
             })[0];
-            var time = this.gameStartTime().valueOf();
+            var time = this.gameStartTime.valueOf();
             return time + '_' + slugify(firstPlayerName) + '_v_' + slugify(secondPlayerName);
         }
     }, {

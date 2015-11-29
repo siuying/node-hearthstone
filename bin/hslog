@@ -2,10 +2,12 @@
 
 var cli = require('cli');
 var fs = require('fs');
-var Hearthstone = require('../hearthstone');
+var touch = require('touch');
 
+var Hearthstone = require('../hearthstone');
 var Configurator = Hearthstone.Configurator;
 var Parser = Hearthstone.Parser;
+var Parsers = Hearthstone.Parsers;
 var Logger = Hearthstone.Logger;
 var Reporter = Hearthstone.Reporter;
 
@@ -34,9 +36,21 @@ cli.main(function(args, options) {
         return 1;
     }
 
+    if (!inputPath.match(/\/$/)) {
+        inputPath = inputPath + "/"
+    }
+    
+    if (!config.match(/\/$/)) {
+        config = config + "/"
+    }
+
     if (!fs.existsSync(output)) {
         this.ok("Create output directory: " + output)
         fs.mkdir(output);
+    }
+
+    for (var parser in Parsers) {
+        touch(`${this.inputPath}${parser.filename}`);
     }
 
     var parser = new Parser();

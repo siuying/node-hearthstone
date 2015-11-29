@@ -10,11 +10,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var EventEmitter = require('events').EventEmitter;
 var Tail = require('file-tail');
-var ls = require('ls');
-
-var Power = require('./parsers/Power');
-var Zone = require('./parsers/Zone');
-var Party = require('./parsers/Party');
+var Parsers = require('./parsers');
 
 var Parser = (function (_EventEmitter) {
     _inherits(Parser, _EventEmitter);
@@ -28,52 +24,31 @@ var Parser = (function (_EventEmitter) {
     _createClass(Parser, [{
         key: 'parse',
         value: function parse(path) {
-            var parser = this;
-            var parsers = [Power, Zone, Party];
+            var _this2 = this;
 
-            if (!path.match(/\/$/)) {
-                path = path + "/";
-            }
-
-            ls(path + "*.log", function () {
-                // find a parser for the file, if found, watch it
-                var file = this.file;
-                var logParser = parsers.filter(function (f) {
-                    return f.filename == file;
-                })[0];
-                var fullpath = this.full;
-                if (logParser) {
-                    console.log("Watching", file);
-                    var tail = new Tail.startTailing(fullpath);
-                    tail.on("line", function (line) {
-                        var result = parser.parseLine(logParser.parsers, line);
-                        if (result) {
-                            console.log(result);
-                        }
-                    });
-                    tail.on('error', function (data) {
-                        console.error("error:", data);
-                    });
-                }
-            });
-        }
-    }, {
-        key: 'parseLine',
-        value: function parseLine(parsers, line) {
-            var match = null;
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
             var _iteratorError = undefined;
 
             try {
-                for (var _iterator = parsers[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var parser = _step.value;
+                var _loop = function _loop() {
+                    parser = _step.value;
 
-                    var result = parser.bind(this)(line);
-                    if (result) {
-                        this.emit.apply(this, result);
-                        return result;
-                    }
+                    var fullpath = '' + path + parser.filename;
+                    var tail = new Tail.startTailing(fullpath);
+                    var parsers = parser.parsers;
+                    tail.on("line", function (line) {
+                        _this2.parseLine(parsers, line);
+                    });
+                    tail.on('error', function (data) {
+                        console.error("error:", data);
+                    });
+                };
+
+                for (var _iterator = Parsers[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var parser;
+
+                    _loop();
                 }
             } catch (err) {
                 _didIteratorError = true;
@@ -86,6 +61,39 @@ var Parser = (function (_EventEmitter) {
                 } finally {
                     if (_didIteratorError) {
                         throw _iteratorError;
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'parseLine',
+        value: function parseLine(parsers, line) {
+            var match = null;
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+                for (var _iterator2 = parsers[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                    var parser = _step2.value;
+
+                    var result = parser(line);
+                    if (result) {
+                        this.emit.apply(this, result);
+                        return result;
+                    }
+                }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
                     }
                 }
             }

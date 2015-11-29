@@ -7,6 +7,7 @@ var Hearthstone = {
     Player: require('./build/player'),
     Game: require('./build/game'),
     Parser: require('./build/parser'),
+    Parsers: require('./build/parsers'),
     Reporter: require('./build/reporter'),
     Configurator: require('./build/configurator')
 };
